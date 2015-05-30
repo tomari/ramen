@@ -32,7 +32,7 @@ alert id AboutAlert
 information
 begin
 	title "About Ramen"
-	message "Ramen Timer RAMENVERSION\nby H.Tomari (aka David Sams)\ndavy14008500@users.sourceforge.net"
+	message "Ramen Timer RAMENVERSION\nby H.Tomari\ndavy@nyacom.net"
    	buttons "OK"
 end
 
