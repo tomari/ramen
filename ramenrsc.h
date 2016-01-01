@@ -1,6 +1,5 @@
 #define MainForm				1000
 #define MainMenuBar				1000
-#define MenuMenu				1000
 #define MenuAboutRamen			1000
 #define MenuPrefs				1001
 #define AboutAlert				1001

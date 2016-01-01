@@ -60,7 +60,7 @@ BEGIN
 	BUTTONS "OK"
 END
 
-MENU MenuMenu
+MENU MainMenuBar
 BEGIN
     PULLDOWN "Options"
     BEGIN
