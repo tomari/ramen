@@ -36,7 +36,7 @@ $(resourcesmain): ramen.rcp ramenrsc.h
 $(resourcesprefs): ramenprefs.rcp ramenprefs.h
 	$(PILRC) -noEllipsis $<
 
-ramen.rcp: ramen.rcp.in
+ramen.rcp: ramen.rcp.in VERSION
 	sed 's/RAMENVERSION/'`cat VERSION`'/g' $< > $@
 
 $(coderesources): ramen
@@ -51,7 +51,7 @@ ramen.o: ramen.c ramenrsc.h ramen.h ramenprefs.h
 ramenprefs.o: ramenprefs.c ramenprefs.h ramenprefsrsc.h
 	$(CC) -c $(CFLAGS) -o $@ $<
 
-package: ramen.prc README README.jp
+package: ramen.prc README README.jp VERSION
 	mkdir ramen-release-`cat VERSION`
 	cp ramen.prc README README.jp ramen-release-`cat VERSION`
 	echo Simple timer for PalmOS, version `cat VERSION` | zip -9 -z ramen-`cat VERSION`.zip ramen-release-`cat VERSION`/*
