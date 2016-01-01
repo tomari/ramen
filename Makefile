@@ -1,30 +1,57 @@
-ramen.prc: code0000.ramen.grc tFRM03e8.bin Talt03e9.bin MBAR03e8.bin\
-		Talt03ea.bin Talt03eb.bin APPL0001.bin tAIN0064.bin \
-		tver0001.bin tAIB03e8.bin tAIB03e9.bin tFRM044c.bin \
-		tFRM07d0.bin Talt07d0.bin
-	build-prc  ramen.prc "Ramen" Ramn *.grc *.bin
+.PHONY: clean
+CC = m68k-palmos-gcc
+OBJRES = m68k-palmos-obj-res
+BUILDPRC = build-prc
+PILRC = pilrc
+CFLAGS = -Wall -Os -finline-functions -I.
 
-tFRM03e8.bin Talt03e9.bin MBAR03e8.bin Talt03ea.bin Talt03eb.bin APPL0001.bin tAIN0064.bin tver0001.bin tAIB03e8.bin tAIB03e9.bin tFRM044c.bin: ramen.rcp ramenrsc.h
-				pilrc -noEllipsis ramen.rcp
+resourcesmain = APPL0001.bin \
+	MBAR03e8.bin \
+	Talt03e9.bin \
+	Talt03ea.bin \
+	Talt03eb.bin \
+	Talt03ec.bin \
+	tAIB03e8.bin \
+	tAIB03e9.bin \
+	tAIN0064.bin \
+	tFRM03e8.bin \
+	tFRM044c.bin \
+	tver0001.bin
 
-tFRM07d0.bin Talt07d0.bin: ramenprefs.rcp ramenprefs.h
-				pilrc -noEllipsis ramenprefs.rcp
+resourcesprefs = tFRM07d0.bin \
+	Talt07d0.bin
+
+coderesources =	code0000.ramen.grc \
+	code0001.ramen.grc \
+	data0000.ramen.grc \
+	pref0000.ramen.grc \
+	rloc0000.ramen.grc
+
+ramen.prc: $(coderesources) $(resourcesmain) $(resourcesprefs)
+	$(BUILDPRC) $@ "Ramen" Ramn $^
+
+$(resourcesmain): ramen.rcp ramenrsc.h
+	$(PILRC) -noEllipsis $<
+
+$(resourcesprefs): ramenprefs.rcp ramenprefs.h
+	$(PILRC) -noEllipsis $<
 
 ramen.rcp: ramen.rcp.in
-		sed 's/RAMENVERSION/'`cat VERSION`'/g' ramen.rcp.in > ramen.rcp
+	sed 's/RAMENVERSION/'`cat VERSION`'/g' $< > $@
 
-code0000.ramen.grc: ramen.o ramenprefs.o
-	m68k-palmos-gcc ramen.o ramenprefs.o -o ramen
-	m68k-palmos-obj-res ramen
+$(coderesources): ramen
+	$(OBJRES) $<
+
+ramen: ramen.o ramenprefs.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 ramen.o: ramen.c ramenrsc.h ramen.h ramenprefs.h
-	m68k-palmos-gcc -Wall -I. -Os -c ramen.c -o ramen.o
+	$(CC) -c $(CFLAGS) -o $@ $<
 
 ramenprefs.o: ramenprefs.c ramenprefs.h ramenprefsrsc.h
-	m68k-palmos-gcc -Wall -I. -Os -c ramenprefs.c -o ramenprefs.o
+	$(CC) -c $(CFLAGS) -o $@ $<
 
 package: ramen.prc README README.jp
-	rm -fr ramen-release-*
 	mkdir ramen-release-`cat VERSION`
 	cp ramen.prc README README.jp ramen-release-`cat VERSION`
 	echo Simple timer for PalmOS, version `cat VERSION` | zip -9 -z ramen-`cat VERSION`.zip ramen-release-`cat VERSION`/*
