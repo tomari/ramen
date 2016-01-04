@@ -12,9 +12,11 @@ typedef struct {
 	UInt8 AlarmVolume;
 } ramenPreferenceType;
 
+static Boolean MainFormHandleEvent(EventPtr eventP);
+static Boolean AppHandleEvent(EventPtr eventP);
+static void setRamenTo(Int32 ramen);
 static MemHandle memHandleWithMinSize(MemHandle mH, UInt32 minsize);
 static void PaintNumbers(Int32 ramen);
-static void setRamenTo(Int32 ramen);
 static void SetAlarm(void);
 static void DisplayAlarm(void);
 static void refreshDisplay(void);
