@@ -10,7 +10,7 @@ static void prefsSetField(UInt16 fieldID, UInt32 distnum) {
 	//const UInt32 DIGITS_LEN=3;
 	const FormPtr frmP = FrmGetActiveForm();
 	const FieldPtr fldP=FrmGetObjectPtr(frmP,FrmGetObjectIndex(frmP, fieldID));
-	Char buf[24];
+	Char buf[RAMEN_DIGITS];
 	StrIToA(buf,distnum);
 
 	FldInsert(fldP,buf,StrLen(buf));
