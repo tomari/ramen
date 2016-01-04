@@ -33,7 +33,7 @@ ramen.prc: $(coderesources) $(resourcesmain) $(resourcesprefs)
 $(resourcesmain): ramen.rcp ramenrsc.h
 	$(PILRC) -noEllipsis $<
 
-$(resourcesprefs): ramenprefs.rcp ramenprefs.h
+$(resourcesprefs): ramenprefs.rcp
 	$(PILRC) -noEllipsis $<
 
 ramen.rcp: ramen.rcp.in VERSION
@@ -45,10 +45,10 @@ $(coderesources): ramen
 ramen: ramen.o ramenprefs.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-ramen.o: ramen.c ramenrsc.h ramen.h ramenprefs.h
+ramen.o: ramen.c ramenrsc.h ramen.h
 	$(CC) -c $(CFLAGS) -o $@ $<
 
-ramenprefs.o: ramenprefs.c ramenprefs.h ramenprefsrsc.h
+ramenprefs.o: ramenprefs.c ramenprefsrsc.h ramen.h
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 package: ramen.prc README README.jp VERSION

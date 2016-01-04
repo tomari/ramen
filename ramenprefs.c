@@ -1,30 +1,26 @@
 #include <PalmOS.h>
 #include "ramen.h"
-#include "ramenprefs.h"
 #include "ramenprefsrsc.h"
 
 static void prefsSetField(UInt16 fieldID, UInt32 distnum);
-static UInt16 prefsGetField(UInt16 fieldID);
+static Int32 prefsGetField(UInt16 fieldID);
 static Boolean prefsHandleEvent(EventPtr eventP);
 
 static void prefsSetField(UInt16 fieldID, UInt32 distnum) {
-	FormType *frmP = FrmGetActiveForm();
-	Char insertChars[3];
-	
-	StrIToA(insertChars, distnum);
-	FldInsert(FrmGetObjectPtr(frmP,FrmGetObjectIndex(frmP, fieldID)), insertChars, StrLen(insertChars));
+	//const UInt32 DIGITS_LEN=3;
+	const FormPtr frmP = FrmGetActiveForm();
+	const FieldPtr fldP=FrmGetObjectPtr(frmP,FrmGetObjectIndex(frmP, fieldID));
+	Char buf[24];
+	StrIToA(buf,distnum);
+
+	FldInsert(fldP,buf,StrLen(buf));
 }
 
-static UInt16 prefsGetField(UInt16 fieldID) {
-	FormType *frmP = FrmGetActiveForm();
-	MemHandle textH = FldGetTextHandle(FrmGetObjectPtr(frmP, FrmGetObjectIndex(frmP, fieldID)));
-	Char *text;
-	UInt16 value;
-	
-	text = MemHandleLock(textH);
-	value = StrAToI(text);
-	MemHandleUnlock(textH);
-	
+static Int32 prefsGetField(UInt16 fieldID) {
+	const FormPtr frmP = FrmGetActiveForm();
+	const FieldPtr fldP = FrmGetObjectPtr(frmP, FrmGetObjectIndex(frmP, fieldID));
+	const Char *text = FldGetTextPtr(fldP);
+	const Int32 value=StrAToI(text);
 	return value;
 }
 
@@ -35,61 +31,50 @@ static Boolean prefsHandleEvent(EventPtr eventP) {
 }
 
 extern void DoPrefs(UInt32 *values, UInt8 *AlarmVolume) {
-	FormType *frmP;
-	FormType *curfrm;
-	UInt16 result;
-	UInt8 i;
-	Boolean ItsNotOver = true;
-	UInt32 *curfld;
-	UInt32 numbers[5];
+	const FormPtr curfrm=FrmGetActiveForm();
+	const FormPtr frmP=FrmInitForm(PREFSFORM);
+	Boolean ItsNotOver;
+	unsigned int i;
 	
-	curfrm = FrmGetActiveForm();
-	frmP=FrmInitForm(PREFSFORM);
 	FrmSetActiveForm(frmP);
 	FrmSetEventHandler(frmP, prefsHandleEvent);
 	FrmDrawForm(frmP);
 	
 	/* Init form */
 	/* Set preset button values to the fields */
-	for(i=0;i<5;i++) {
-		prefsSetField(PRESETNUM1+i, *(values + i));
-	}
+	i=4; do {
+		prefsSetField(PRESETNUM1+i, values[i]);
+	} while(i--);
 	
 	/* Set the alarm volume to the push button */
-	for(i=0;i<4;i++) {
-		if(*AlarmVolume == i) {
-			FrmSetControlValue(frmP, FrmGetObjectIndex(frmP, VOLUMELOW+i),1);
-		}
-	}
-	
+	FrmSetControlValue(frmP, FrmGetObjectIndex(frmP, VOLUMELOW+ *AlarmVolume),1);
+		
 	/* Exit */
-	while(ItsNotOver == true) {
-		result = FrmDoDialog(frmP);
+	do {
+		const UInt16 result=FrmDoDialog(frmP);
 		ItsNotOver = false;
 		if (result == OKAYBUTTON) {
-			for(i=0; i<5; i++) {
-				numbers[i] = prefsGetField(PRESETNUM1+i);
-				if((numbers[i] < MINTIME) || (numbers[i] > MAXTIME)) {
-					ItsNotOver = ItsNotOver|true;
+			UInt32 numbers[5];
+			i=4; do {
+				const Int32 nfld=prefsGetField(PRESETNUM1+i);
+				if(MINTIME <= nfld && nfld <= MAXTIME) {
+					numbers[i]=nfld;
+				} else {
+					ItsNotOver=true;
 				}
-			}
-			if(ItsNotOver == false) {
-				for(i=0; i<5; i++) {
-					curfld = (values + i);
-					*curfld = numbers[i];
-				}
-				for(i=0; i<4; i++) {
-					if(FrmGetControlValue(frmP, FrmGetObjectIndex(frmP, VOLUMELOW+i)) == 1) {
-						*AlarmVolume = i;
-					}
-				}
-			} else {
+			} while(i--);
+			if(ItsNotOver) {
 				FrmAlert(NONNUMBERALERT);
+			} else {
+				const UInt16 alarmVolIdx=FrmGetControlGroupSelection(frmP, ALARMGROUP);
+				if(alarmVolIdx != frmNoSelectedControl) {
+					const UInt16 objId=FrmGetObjectId(frmP,alarmVolIdx);
+					*AlarmVolume = objId - VOLUMELOW;
+				}
+				MemMove(values,numbers,sizeof(numbers));
 			}
-		} else {
-			ItsNotOver = false;
 		}
-	}
+	} while(ItsNotOver);
 	
 	FrmDeleteForm(frmP);
 	FrmSetActiveForm(curfrm);

@@ -18,3 +18,4 @@
 #define VOLUMEMED		2041
 #define VOLUMEHIGH		2042
 #define VOLUMESYS		2043
+#define ALARMGROUP	1

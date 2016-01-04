@@ -3,7 +3,6 @@
 #include <SonyChars.h>
 #include "ramen.h"
 #include "ramenrsc.h"
-#include "ramenprefs.h"
 
 typedef struct {
 	Int32 BombTime;
@@ -25,8 +24,6 @@ static void RamenSavePreferences(void);
 static void RamenPlaySound(void);
 
 /* Constants */
-const Int32 MAXTIME=99;
-const Int32 MINTIME=1;
 static const UInt32 MYCREATORID='Ramn';
 
 /* var */
