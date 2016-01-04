@@ -13,18 +13,18 @@ typedef struct {
 } ramenPreferenceType;
 
 static Boolean MainFormHandleEvent(EventPtr eventP);
-static Boolean AppHandleEvent(EventPtr eventP);
+static inline Boolean AppHandleEvent(EventPtr eventP);
 static void setRamenTo(Int32 ramen);
-static MemHandle memHandleWithMinSize(MemHandle mH, UInt32 minsize);
+static inline MemHandle memHandleWithMinSize(MemHandle mH, UInt32 minsize);
 static void PaintNumbers(Int32 ramen);
 static void SetAlarm(void);
-static void DisplayAlarm(void);
+static inline void DisplayAlarm(void);
 static void refreshDisplay(void);
-static Boolean isTheDeviceSupported(void);
+static inline Boolean isTheDeviceSupported(void);
 static void refreshButtons(void);
 static void RamenLoadPreferences(ramenPreferenceType *);
 static void RamenSavePreferences(void);
-static void RamenPlaySound(void);
+static inline void RamenPlaySound(void);
 
 /* Constants */
 static const UInt32 MYCREATORID='Ramn';
@@ -312,11 +312,10 @@ static void RamenSavePreferences() {
 /* Function to play alarm sound; NO GLOBAL VARIABLE CAN BE USED!!! */
 static void RamenPlaySound() {
 	ramenPreferenceType lp;
-	SndCommandType snd = {
-		.param1=1760,
-		.param2=230,
-		.cmd = sndCmdFreqDurationAmp
-	};
+	SndCommandType snd;
+	snd.param1=1760;
+	snd.param2=230;
+	snd.cmd = sndCmdFreqDurationAmp;
 	RamenLoadPreferences(&lp);
 	if(lp.AlarmVolume<3) {
 		snd.param3 = 16 + lp.AlarmVolume * 24;

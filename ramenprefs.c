@@ -2,8 +2,8 @@
 #include "ramen.h"
 #include "ramenprefsrsc.h"
 
-static void prefsSetField(UInt16 fieldID, UInt32 distnum);
-static Int32 prefsGetField(UInt16 fieldID);
+static inline void prefsSetField(UInt16 fieldID, UInt32 distnum);
+static inline Int32 prefsGetField(UInt16 fieldID);
 static Boolean prefsHandleEvent(EventPtr eventP);
 
 static void prefsSetField(UInt16 fieldID, UInt32 distnum) {
