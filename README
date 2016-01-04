@@ -10,6 +10,10 @@ and palmOne's 5-way navigation buttons.
 
 A simple cooking timer w/ preset buttons.
 
+Changes in 2.0
+	Start/Stop button is made larger for operation without stylus
+	Bug fixes, code size reduction and speed improvements
+
 Changes in 1.5
 	Added an option to use the volume level set in the system preferences.
 	Modified to be compatible with PalmOS 2 devices in addition to 3+.
