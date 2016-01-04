@@ -12,6 +12,7 @@ typedef struct {
 	UInt8 AlarmVolume;
 } ramenPreferenceType;
 
+static MemHandle memHandleWithMinSize(MemHandle mH, UInt32 minsize);
 static void PaintNumbers(Int32 ramen);
 static void setRamenTo(Int32 ramen);
 static void SetAlarm(void);
@@ -35,8 +36,6 @@ ramenPreferenceType rp={
 	.AlarmVolume = 3
 };
 UInt32 lastTimeRefreshed = 0;
-Char ButtonLabels[5][3];
-Char NumLabel[3];
 
 /* implementation */
 static Boolean MainFormHandleEvent(EventPtr eventP) {
@@ -173,6 +172,19 @@ static void setRamenTo(Int32 ramen) {
 	}
 }
 
+static MemHandle memHandleWithMinSize(MemHandle mH, UInt32 minsize) {
+	if(mH) {
+		if(MemHandleSize(mH)<minsize) {
+			if(MemHandleResize(mH,minsize)) {
+				return NULL;
+			}
+		}
+	} else {
+		mH = MemHandleNew(minsize);
+	}
+	return mH;
+}
+
 /* PaintNumbers(Int32 ramen)
 	->ramen : The number to be drawn; if 0, it only erases the display area.
 	UPDATE: new version uses a field to avoid flickers
@@ -181,15 +193,19 @@ static void PaintNumbers(Int32 ramen) {
 	const FormPtr frmP = FrmGetActiveForm();
 	const UInt16 fldIndex = FrmGetObjectIndex(frmP, DISPLAY0);
 	const FieldPtr fieldP = FrmGetObjectPtr(frmP, fldIndex);
-	if(!ramen) {
-		FrmHideObject(frmP, fldIndex);
-	} else {
-		FldSetInsertionPoint(fieldP,0);
-		FldSetSelection(fieldP,0,0);
-		StrIToA(NumLabel, ramen);
-		FldSetTextPtr(fieldP, NumLabel);
-		FrmShowObject(frmP, fldIndex);
+	MemHandle textHandle=FldGetTextHandle(fieldP);
+	FldSetTextHandle(fieldP,NULL);
+	if((textHandle=memHandleWithMinSize(textHandle,RAMEN_DIGITS))) {
+		Char *textp=MemHandleLock(textHandle);
+		if(!ramen) {
+			textp[0]=0;
+		} else {
+			StrIToA(textp,ramen);
+		}
+		MemHandleUnlock(textHandle);
 	}
+	FldSetTextHandle(fieldP,textHandle);
+	FldDrawField(fieldP);
 }
 
 static void SetAlarm() {
@@ -263,8 +279,9 @@ static void refreshButtons() {
 	const FormPtr frmP = FrmGetActiveForm();
 	unsigned int i=4; do {
 		const ControlPtr theButton=FrmGetObjectPtr(frmP, FrmGetObjectIndex(frmP,PRESET1+i));
-		StrIToA(ButtonLabels[i], rp.Presets[i]);
-		CtlSetLabel(theButton, ButtonLabels[i]);
+		Char *label=(void *)CtlGetLabel(theButton);
+		StrIToA(label, rp.Presets[i]);
+		CtlDrawControl(theButton);
 	} while(i--);
 }
 
