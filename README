@@ -10,6 +10,9 @@ and palmOne's 5-way navigation buttons.
 
 A simple cooking timer w/ preset buttons.
 
+Changes in 2.1 (2016-Jan-06)
+	Fix new bugs that were introduced in 2.0
+
 Changes in 2.0
 	Start/Stop button is made larger for operation without stylus
 	Bug fixes, code size reduction and speed improvements
