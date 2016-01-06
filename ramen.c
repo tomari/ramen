@@ -51,6 +51,8 @@ static Boolean MainFormHandleEvent(EventPtr eventP) {
 			DoPrefs(rp.Presets, &rp.AlarmVolume);
 			refreshButtons();
 			RamenSavePreferences();
+		} else {
+			return false;
 		}
 	} else if(eType == ctlRepeatEvent) {
 		const UInt16 controlID = eventP->data.ctlRepeat.controlID;
@@ -70,6 +72,8 @@ static Boolean MainFormHandleEvent(EventPtr eventP) {
 			  controlID == PRESET4 ||
 			  controlID == PRESET5) {
 			setRamenTo(rp.Presets[eventP->data.ctlSelect.controlID - PRESET1]);
+		} else {
+			return false;
 		}
 	} else if(eType == keyDownEvent) {
 		const WChar thekey =  eventP->data.keyDown.chr;
@@ -109,8 +113,8 @@ static Boolean AppHandleEvent(EventPtr eventP) {
 	if (eType == frmLoadEvent) { /* Initialize and activate the form resource. */
 		const FormPtr frmP = FrmInitForm(eventP->data.frmLoad.formID);
 		FrmSetActiveForm(frmP);
-		refreshButtons();
 		if (eventP->data.frmLoad.formID == MainForm) {
+			refreshButtons();
 			FrmSetEventHandler(frmP, MainFormHandleEvent);
 		}
 	} else if (eventP->eType == frmOpenEvent) { /* Load the form resource. */
