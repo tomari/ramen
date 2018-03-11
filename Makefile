@@ -51,9 +51,9 @@ ramen.o: ramen.c ramenrsc.h ramen.h
 ramenprefs.o: ramenprefs.c ramenprefsrsc.h ramen.h
 	$(CC) -c $(CFLAGS) -o $@ $<
 
-package: ramen.prc README README.jp VERSION
+package: ramen.prc README.md README.jp.md VERSION
 	mkdir ramen-release-`cat VERSION`
-	cp ramen.prc README README.jp ramen-release-`cat VERSION`
+	cp ramen.prc README.md README.jp.md ramen-release-`cat VERSION`
 	echo Simple timer for PalmOS, version `cat VERSION` | zip -9 -z ramen-`cat VERSION`.zip ramen-release-`cat VERSION`/*
 
 clean:
