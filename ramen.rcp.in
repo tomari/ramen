@@ -32,7 +32,7 @@ alert id AboutAlert
 information
 begin
 	title "About Ramen"
-	message "Ramen Timer RAMENVERSION\nby H.Tomari\ndavy@nyacom.net"
+	message "Ramen Timer RAMENVERSION\nhttps://www.okqubit.net/"
    	buttons "OK"
 end
 
