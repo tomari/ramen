@@ -1,5 +1,7 @@
 # Ramen - Simple cooking timer for PalmOS
 
+[![Build Status](https://travis-ci.org/tomari/ramen.svg?branch=master)](https://travis-ci.org/tomari/ramen)
+
 ## Requirements
 
 PalmOS 2.0 or later. 
