@@ -1,0 +1,15 @@
+language: python
+
+services: docker
+
+before_install:
+  - docker pull tomari/prc-tools-remix
+
+install:
+  - pip install python-swiftclient python-keystoneclient
+
+script:
+  - docker run --rm -v"$TRAVIS_BUILD_DIR:/root/code" tomari/prc-tools-remix '/root/code/scripts/build.sh'
+  - make package
+  - swift upload travisci ramen-*.zip
+
